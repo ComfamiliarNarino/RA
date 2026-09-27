@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Panel de la valla RA · Comfamiliar Nariño</title>
+  <style>
+    :root { --oscuro: #0E2A5E; --azul: #1D4286; --claro: #2F6DB5; --verde: #039047; --rojo: #C0392B; --gris: #4A4A4A; --fondo: #F2F5F9; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; background: var(--fondo); color: var(--gris); }
+    header { background: linear-gradient(90deg, var(--oscuro), var(--claro)); color: #fff; padding: 14px 16px; }
+    header .t1 { font-size: 19px; font-weight: bold; } header .t2 { font-size: 14px; opacity: .9; }
+    main { max-width: 860px; margin: 0 auto; padding: 14px; }
+    .tarjeta { background: #fff; border-radius: 14px; padding: 16px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(14,42,94,.08); }
+    h2 { margin: 0 0 10px; font-size: 18px; color: var(--oscuro); }
+    .boton { background: linear-gradient(90deg, var(--oscuro), var(--claro)); color: #fff; border: none; border-radius: 24px;
+             padding: 12px 20px; font-size: 16px; font-weight: bold; cursor: pointer; }
+    .boton:disabled { opacity: .45; cursor: not-allowed; }
+    .boton.sec { background: #E6ECF5; color: var(--oscuro); }
+    .boton.peligro { background: var(--rojo); }
+    input[type=text], input[type=password], input[type=number] { font-size: 16px; padding: 10px; border: 1px solid #C9D3E2; border-radius: 10px; width: 100%; }
+    label { font-size: 14px; font-weight: bold; color: var(--oscuro); display: block; margin: 8px 0 4px; }
+    .ayuda { font-size: 14px; line-height: 1.5; } .ayuda ol { padding-left: 20px; } .ayuda code { background: #EEF2F8; padding: 1px 5px; border-radius: 4px; }
+    details summary { cursor: pointer; font-weight: bold; color: var(--claro); margin: 6px 0; }
+    #lista { display: grid; gap: 10px; }
+    .item { display: grid; grid-template-columns: 64px 1fr auto; gap: 12px; align-items: center; border: 1px solid #E1E7F0; border-radius: 12px; padding: 8px; }
+    .item img { width: 64px; height: 114px; object-fit: cover; border-radius: 6px; background: #eee; }
+    .item .nombre { font-size: 13px; word-break: break-all; } .item .aviso { font-size: 12px; color: #A66300; margin-top: 4px; }
+    .item .seg { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 14px; } .item .seg input { width: 78px; padding: 6px; }
+    .acciones { display: flex; flex-direction: column; gap: 6px; }
+    .acciones button { border: none; background: #E6ECF5; color: var(--oscuro); border-radius: 8px; width: 40px; height: 34px; font-size: 16px; cursor: pointer; }
+    .acciones button.borrar { background: #FBE3E1; color: var(--rojo); }
+    .nuevo { outline: 2px dashed var(--verde); }
+    .fila { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .resumen { font-size: 14px; margin-top: 8px; }
+    #estado { font-size: 15px; line-height: 1.5; white-space: pre-line; }
+    .ok { color: var(--verde); font-weight: bold; } .error { color: var(--rojo); font-weight: bold; }
+    #previa { width: 200px; height: 300px; border: 8px solid #4E565F; border-radius: 10px; background: #fff; overflow: hidden; margin: 0 auto; }
+    .oculto { display: none !important; }
+    .item select { font-size: 14px; padding: 6px; border: 1px solid #C9D3E2; border-radius: 8px; margin-top: 6px; max-width: 100%; }
+    #previa { position: relative; }
+    #previa .tira { position: absolute; top: 0; height: 100%; background-repeat: no-repeat; background-size: 800% 100%; }
+    #previa .zoomimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; }
+    .e-giro { animation: giroIn .38s ease-out backwards; } .e-persiana { animation: persianaIn .38s ease-out backwards; } .e-zoom { animation: zoomIn .45s ease-out backwards; }
+    @keyframes giroIn { from { transform: perspective(500px) rotateY(-90deg); } to { transform: perspective(500px) rotateY(0); } }
+    @keyframes persianaIn { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    @keyframes zoomIn { from { transform: scale(0); } to { transform: scale(1); } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="t1">Panel de la valla RA</div>
+    <div class="t2">Comfamiliar Nariño · Comunicaciones</div>
+  </header>
+  <main>
+    <!-- 1. Conexión -->
+    <section class="tarjeta" id="sec-conexion">
+      <h2>1. Conexión</h2>
+      <div id="conectado" class="oculto">
+        <div class="fila"><span class="ok">✔ Conectado a <span id="repo-nombre"></span></span>
+          <button class="boton sec" id="btn-salir" type="button">Cerrar sesión</button></div>
+      </div>
+      <div id="desconectado">
+        <label for="token">Llave de acceso (token de GitHub)</label>
+        <input type="password" id="token" placeholder="github_pat_..." autocomplete="off">
+        <div class="fila" style="margin-top:10px">
+          <label style="margin:0;font-weight:normal"><input type="checkbox" id="recordar" checked> Recordar en este dispositivo</label>
+          <button class="boton" id="btn-conectar" type="button">Conectar</button>
+        </div>
+        <details class="ayuda">
+          <summary>¿Cómo creo la llave de acceso? (solo una vez)</summary>
+          <ol>
+            <li>Inicia sesión en GitHub con la cuenta <b>ComfamiliarNarino</b> y abre <code>github.com/settings/personal-access-tokens/new</code>.</li>
+            <li><b>Token name:</b> «Panel valla RA». <b>Expiration:</b> 1 año.</li>
+            <li><b>Resource owner:</b> ComfamiliarNarino. <b>Repository access:</b> <i>Only select repositories</i> → <b>RA</b>.</li>
+            <li><b>Permissions → Repository permissions:</b> <i>Contents</i> = <b>Read and write</b> y <i>Actions</i> = <b>Read-only</b>.</li>
+            <li>Haz clic en <b>Generate token</b>, copia la llave y pégala aquí. No la compartas: quien la tenga puede cambiar la valla.</li>
+          </ol>
+        </details>
+      </div>
+    </section>
+
+    <!-- 2. Imágenes -->
+    <section class="tarjeta oculto" id="sec-imagenes">
+      <h2>2. Imágenes de la valla</h2>
+      <p class="ayuda" style="margin-top:0">Formato ideal: <b>1080 × 1620 px, vertical (2:3)</b>. También sirven 1024 × 1536. Se muestran en este orden, en bucle. Usa ↑ ↓ para ordenar, cambia los segundos y elige la transición con la que entra cada imagen. <b>Máximo 10 imágenes.</b></p>
+      <div id="lista"></div>
+      <div class="fila" style="margin-top:12px">
+        <label class="boton sec" id="btn-agregar" style="margin:0;display:inline-block">＋ Agregar imágenes
+          <input type="file" id="archivos" accept="image/jpeg,image/png,image/webp" multiple class="oculto"></label>
+      </div>
+      <div class="resumen" id="resumen"></div>
+      <details>
+        <summary>Tamaño y altura de la valla</summary>
+        <label for="ancho">Ancho de la valla (metros)</label><input type="number" id="ancho" min="0.5" max="4" step="0.05">
+        <label for="altura">Altura desde el piso (metros)</label><input type="number" id="altura" min="0" max="3" step="0.05">
+        <p class="ayuda">El alto de la valla se calcula solo para mantener la proporción 2:3.</p>
+      </details>
+    </section>
+
+    <!-- 3. Vista previa -->
+    <section class="tarjeta oculto" id="sec-previa">
+      <h2>3. Vista previa del ciclo</h2>
+      <div id="previa" aria-label="Vista previa"></div>
+      <p class="resumen" id="previa-txt" style="text-align:center"></p>
+    </section>
+
+    <!-- 4. Publicar -->
+    <section class="tarjeta oculto" id="sec-publicar">
+      <h2>4. Publicar</h2>
+      <p class="ayuda" style="margin-top:0">Al publicar, la valla se reconstruye automáticamente para Android e iPhone. En 3 a 5 minutos el mismo QR mostrará las imágenes nuevas.</p>
+      <div class="fila">
+        <button class="boton" id="btn-publicar" type="button">🚀 Publicar cambios</button>
+        <button class="boton sec" id="btn-descartar" type="button">Descartar cambios</button>
+      </div>
+      <p id="estado"></p>
+      <p class="ayuda"><a id="enlace-exp" href="#" target="_blank" rel="noopener">Abrir la experiencia publicada</a></p>
+    </section>
+  </main>
+
+  <script>
+    // ---------------- configuración ----------------
+    const DUENO = "ComfamiliarNarino", REPO = "RA", RAMA = "main";
+    const API = "https://api.github.com";
+    const $ = (id) => document.getElementById(id);
+    let token = localStorage.getItem("ra_token") || sessionStorage.getItem("ra_token") || "";
+    let config = null;            // config.json publicado
+    let items = [];               // [{archivo, segundos, url, nuevo, base64, aviso}]
+    let eliminados = [];          // archivos a borrar del repositorio
+    let cambios = false;
+    const MAX = 10;
+    const TRANS = { giro: "Giro (cartelera)", persiana: "Persiana", zoom: "Zoom", corte: "Ninguna (corte)" };
+
+    // ---------------- utilidades ----------------
+    const aBase64 = (texto) => btoa(String.fromCharCode(...new TextEncoder().encode(texto)));
+    const deBase64 = (b64) => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\n/g, "")), (c) => c.charCodeAt(0)));
+    function marcaTiempo() { const d = new Date(), p = (n) => String(n).padStart(2, "0");
+      return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`; }
+    function estado(texto, clase = "") { $("estado").innerHTML = clase ? `<span class="${clase}">${texto}</span>` : texto; }
+    function marcarCambios(v = true) { cambios = v; $("btn-publicar").disabled = !v; $("btn-descartar").disabled = !v; if (items.length) resumen(); }
+
+    async function api(metodo, ruta, cuerpo) {
+      const r = await fetch(API + ruta, { method: metodo, headers: { "Authorization": "Bearer " + token, "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28", ...(cuerpo ? { "Content-Type": "application/json" } : {}) }, body: cuerpo ? JSON.stringify(cuerpo) : undefined });
+      if (!r.ok) {
+        const msg = { 401: "La llave de acceso no es válida o venció.", 403: "La llave no tiene permiso suficiente (revisa Contents: Read and write).",
+                      404: "No se encontró el repositorio o el archivo (revisa que la llave tenga acceso al repositorio RA).",
+                      409: "El repositorio cambió mientras publicabas. Recarga el panel e inténtalo de nuevo.",
+                      422: "GitHub rechazó el cambio. Recarga el panel e inténtalo de nuevo." }[r.status] || `Error ${r.status} de GitHub.`;
+        throw new Error(msg);
+      }
+      return r.status === 204 ? null : r.json();
+    }
+
+    // ---------------- conexión ----------------
+    async function conectar() {
+      try {
+        estado("Conectando…");
+        const cfg = await api("GET", `/repos/${DUENO}/${REPO}/contents/config.json?ref=${RAMA}`);
+        config = JSON.parse(deBase64(cfg.content));
+        $("repo-nombre").textContent = `${DUENO}/${REPO}`;
+        $("conectado").classList.remove("oculto"); $("desconectado").classList.add("oculto");
+        ["sec-imagenes", "sec-previa", "sec-publicar"].forEach((s) => $(s).classList.remove("oculto"));
+        $("enlace-exp").href = `https://${DUENO.toLowerCase()}.github.io/${REPO}/experiencia.html`;
+        cargarDesdeConfig(); estado("");
+      } catch (e) { estado(e.message, "error"); }
+    }
+    function cargarDesdeConfig() {
+      items = config.imagenes.map((i) => ({ archivo: i.archivo, segundos: i.segundos, transicion: TRANS[i.transicion] ? i.transicion : "giro",
+        url: `https://raw.githubusercontent.com/${DUENO}/${REPO}/${RAMA}/${i.archivo}?t=${Date.now()}` }));
+      eliminados = [];
+      $("ancho").value = config.valla_ancho ?? 1.7; $("altura").value = config.altura_base ?? 1.5;
+      pintar(); marcarCambios(false);
+    }
+    $("btn-conectar").onclick = () => {
+      token = $("token").value.trim(); if (!token) return estado("Pega la llave de acceso.", "error");
+      ($("recordar").checked ? localStorage : sessionStorage).setItem("ra_token", token); conectar();
+    };
+    $("btn-salir").onclick = () => { localStorage.removeItem("ra_token"); sessionStorage.removeItem("ra_token"); location.reload(); };
+
+    // ---------------- lista de imágenes ----------------
+    function pintar() {
+      const lista = $("lista"); lista.innerHTML = "";
+      items.forEach((it, i) => {
+        const div = document.createElement("div"); div.className = "item" + (it.nuevo ? " nuevo" : "");
+        div.innerHTML = `<img src="${it.url}" alt="Imagen ${i + 1}">
+          <div><div class="nombre"><b>${i + 1}.</b> ${it.nuevo ? "Nueva · " : ""}${it.archivo.split("/").pop()}</div>
+          ${it.aviso ? `<div class="aviso">⚠ ${it.aviso}</div>` : ""}
+          <div class="seg"><input type="number" min="1" max="120" step="1" value="${it.segundos}" aria-label="Segundos"> segundos</div>
+          <select class="trans" aria-label="Transición de entrada">${Object.entries(TRANS).map(([v, t]) => `<option value="${v}" ${v === it.transicion ? "selected" : ""}>Entra con: ${t}</option>`).join("")}</select></div>
+          <div class="acciones"><button title="Subir">↑</button><button title="Bajar">↓</button><button class="borrar" title="Quitar">🗑</button></div>`;
+        const [arriba, abajo, borrar] = div.querySelectorAll(".acciones button");
+        div.querySelector(".trans").onchange = (e) => { it.transicion = e.target.value; marcarCambios(); reiniciarPrevia(i); };
+        div.querySelector(".seg input").onchange = (e) => { it.segundos = Math.max(1, Math.min(120, Number(e.target.value) || 6)); e.target.value = it.segundos; marcarCambios(); resumen(); };
+        arriba.onclick = () => { if (i > 0) { [items[i - 1], items[i]] = [items[i], items[i - 1]]; pintar(); marcarCambios(); } };
+        abajo.onclick = () => { if (i < items.length - 1) { [items[i + 1], items[i]] = [items[i], items[i + 1]]; pintar(); marcarCambios(); } };
+        borrar.onclick = () => {
+          if (items.length === 1) return alert("La valla necesita al menos una imagen.");
+          if (!confirm("¿Quitar esta imagen de la valla?")) return;
+          if (!it.nuevo) eliminados.push(it.archivo);
+          items.splice(i, 1); pintar(); marcarCambios();
+        };
+        lista.appendChild(div);
+      });
+      resumen(); reiniciarPrevia();
+    }
+    function resumen() {
+      const total = items.reduce((s, it) => s + Number(it.segundos), 0);
+      $("resumen").textContent = `${items.length} de ${MAX} imágenes · el ciclo dura ${total} segundos` + (cambios ? " · hay cambios sin publicar" : "");
+      $("btn-agregar").style.opacity = items.length >= MAX ? .45 : 1; $("archivos").disabled = items.length >= MAX;
+    }
+
+    // Agregar imágenes: se ajustan a JPG de máximo 1080 x 1620 para que la valla cargue rápido
+    $("archivos").onchange = async (e) => {
+      let archivos = [...e.target.files]; e.target.value = "";
+      const cupo = MAX - items.length;
+      if (cupo <= 0) return alert(`La valla admite máximo ${MAX} imágenes. Quita alguna para agregar otra.`);
+      if (archivos.length > cupo) { alert(`Solo se agregarán ${cupo} imagen(es): el máximo es ${MAX}.`); archivos = archivos.slice(0, cupo); }
+      for (const [n, f] of archivos.entries()) {
+        try {
+          const img = await new Promise((ok, mal) => { const im = new Image(); im.onload = () => ok(im); im.onerror = mal; im.src = URL.createObjectURL(f); });
+          const prop = img.naturalWidth / img.naturalHeight;
+          const aviso = Math.abs(prop - 2 / 3) > 0.01
+            ? `Mide ${img.naturalWidth} × ${img.naturalHeight}. No es 2:3: se verá con franjas blancas.` : "";
+          const esc = Math.min(1, 1080 / img.naturalWidth, 1620 / img.naturalHeight);
+          const c = document.createElement("canvas"); c.width = Math.round(img.naturalWidth * esc); c.height = Math.round(img.naturalHeight * esc);
+          const ctx = c.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(img, 0, 0, c.width, c.height);
+          const dataUrl = c.toDataURL("image/jpeg", 0.86);
+          items.push({ archivo: `imagenes/${marcaTiempo()}-${n + 1}.jpg`, segundos: 6, transicion: "giro", url: dataUrl, nuevo: true, base64: dataUrl.split(",")[1], aviso });
+        } catch { alert(`No se pudo leer «${f.name}». Usa JPG o PNG.`); }
+      }
+      pintar(); marcarCambios();
+    };
+    $("ancho").onchange = $("altura").onchange = () => marcarCambios();
+
+    // ---------------- vista previa ----------------
+    let tPrevia = null, iPrevia = 0;
+    function reiniciarPrevia(desde = 0) { clearTimeout(tPrevia); iPrevia = desde; mostrarPrevia(); }
+    function mostrarPrevia() {
+      if (!items.length) return;
+      const n = iPrevia % items.length, it = items[n], caja = $("previa");
+      caja.innerHTML = "";
+      if (it.transicion === "zoom" || it.transicion === "corte") {
+        const im = document.createElement("img"); im.className = "zoomimg" + (it.transicion === "zoom" ? " e-zoom" : ""); im.src = it.url; caja.appendChild(im);
+      } else {
+        for (let k = 0; k < 8; k++) {          // 8 franjas verticales, como en la valla
+          const t = document.createElement("div"); t.className = "tira e-" + it.transicion;
+          t.style.left = (k * 12.5) + "%"; t.style.width = "12.5%";
+          t.style.backgroundImage = `url("${it.url}")`; t.style.backgroundPosition = `${(k * 100) / 7}% 0`;
+          t.style.animationDelay = (k * 0.03) + "s"; caja.appendChild(t);
+        }
+      }
+      $("previa-txt").textContent = `Imagen ${n + 1} de ${items.length} · ${it.segundos} s · entra con: ${TRANS[it.transicion]}`;
+      tPrevia = setTimeout(() => { iPrevia++; mostrarPrevia(); }, it.segundos * 1000);
+    }
+
+    // ---------------- publicar: un solo cambio (commit) con imágenes nuevas, borradas y config.json ----------------
+    function nuevaConfig() {
+      return { ...config, valla_ancho: Number($("ancho").value) || 1.7, altura_base: Number($("altura").value) || 1.5,
+               imagenes: items.map((it) => ({ archivo: it.archivo, segundos: Number(it.segundos), transicion: it.transicion || "giro" })) };
+    }
+    async function publicar() {
+      if (!items.length) return estado("Agrega al menos una imagen.", "error");
+      $("btn-publicar").disabled = true; $("btn-descartar").disabled = true;
+      try {
+        estado("1/4 · Preparando…");
+        const ref = await api("GET", `/repos/${DUENO}/${REPO}/git/ref/heads/${RAMA}`);
+        const padre = await api("GET", `/repos/${DUENO}/${REPO}/git/commits/${ref.object.sha}`);
+        const arbol = [];
+        const nuevos = items.filter((it) => it.nuevo);
+        for (const [n, it] of nuevos.entries()) {
+          estado(`2/4 · Subiendo imagen ${n + 1} de ${nuevos.length}…`);
+          const blob = await api("POST", `/repos/${DUENO}/${REPO}/git/blobs`, { content: it.base64, encoding: "base64" });
+          arbol.push({ path: it.archivo, mode: "100644", type: "blob", sha: blob.sha });
+        }
+        const cfgNueva = nuevaConfig();
+        const blobCfg = await api("POST", `/repos/${DUENO}/${REPO}/git/blobs`, { content: aBase64(JSON.stringify(cfgNueva, null, 2)), encoding: "base64" });
+        arbol.push({ path: "config.json", mode: "100644", type: "blob", sha: blobCfg.sha });
+        for (const archivo of eliminados) arbol.push({ path: archivo, mode: "100644", type: "blob", sha: null });   // borra del repositorio
+        estado("3/4 · Guardando cambios…");
+        const t = await api("POST", `/repos/${DUENO}/${REPO}/git/trees`, { base_tree: padre.tree.sha, tree: arbol });
+        const commit = await api("POST", `/repos/${DUENO}/${REPO}/git/commits`,
+          { message: `Panel: valla con ${items.length} imágenes (${new Date().toLocaleString("es-CO")})`, tree: t.sha, parents: [ref.object.sha] });
+        await api("PATCH", `/repos/${DUENO}/${REPO}/git/refs/heads/${RAMA}`, { sha: commit.sha });
+        config = cfgNueva; items.forEach((it) => { if (it.nuevo) { it.nuevo = false; delete it.base64; } }); eliminados = [];
+        marcarCambios(false); pintar();
+        seguirConstruccion(commit.sha);
+      } catch (e) { estado(e.message, "error"); marcarCambios(true); }
+    }
+    // Sigue el avance de la construcción automática en GitHub Actions
+    async function seguirConstruccion(sha, intento = 0) {
+      try {
+        const r = await api("GET", `/repos/${DUENO}/${REPO}/actions/runs?head_sha=${sha}&per_page=1`);
+        const run = r.workflow_runs && r.workflow_runs[0];
+        if (!run) { estado("4/4 · Cambios guardados. Esperando que empiece la construcción…"); }
+        else if (run.status !== "completed") { estado(`4/4 · Construyendo la valla para Android e iPhone… (${Math.round(intento * 10 / 60 * 10) / 10} min)\nNo cierres esta página si quieres ver el resultado.`); }
+        else if (run.conclusion === "success") { return estado("✅ ¡Publicado! En 1 o 2 minutos el QR mostrará la valla nueva.\nSi ves la versión anterior, abre la experiencia en una pestaña privada.", "ok"); }
+        else { return estado(`La construcción falló (${run.conclusion}). Revisa la pestaña Actions del repositorio: ${run.html_url}`, "error"); }
+        if (intento < 60) setTimeout(() => seguirConstruccion(sha, intento + 1), 10000);
+        else estado("La construcción está tardando más de lo normal. Revisa la pestaña Actions del repositorio.", "error");
+      } catch (e) { estado("Cambios guardados. No se pudo consultar el avance: " + e.message + "\nRevisa la pestaña Actions del repositorio.", "error"); }
+    }
+    $("btn-publicar").onclick = () => { if (confirm("¿Publicar los cambios? La valla del QR se actualizará en unos minutos.")) publicar(); };
+    $("btn-descartar").onclick = () => { if (confirm("¿Descartar los cambios sin publicar?")) cargarDesdeConfig(); };
+    window.addEventListener("beforeunload", (e) => { if (cambios) { e.preventDefault(); e.returnValue = ""; } });
+
+    if (token) conectar();
+  </script>
+</body>
+</html>
