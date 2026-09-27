@@ -1,0 +1,7 @@
+numpy==2.4.4
+trimesh==5.1.0
+shapely==2.1.2
+pygltflib==1.16.5
+usd-core==26.8
+pillow==12.1.1
+mapbox-earcut==2.1.0
