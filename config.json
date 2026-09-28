@@ -1,45 +1,15 @@
 {
-  "valla_ancho": 1.7,
+  "valla_ancho": 1,
   "altura_base": 1.5,
   "edificio_ancho": 1.5,
   "imagenes": [
     {
-      "archivo": "imagenes/01-SV_Portada.jpg",
-      "segundos": 3,
-      "transicion": "zoom"
-    },
-    {
-      "archivo": "imagenes/02-SV_1a.jpg",
-      "segundos": 6,
-      "transicion": "giro"
-    },
-    {
-      "archivo": "imagenes/03-SV_1b.jpg",
-      "segundos": 6,
-      "transicion": "persiana"
-    },
-    {
-      "archivo": "imagenes/04-SV_1c.jpg",
-      "segundos": 6,
-      "transicion": "giro"
-    },
-    {
-      "archivo": "imagenes/05-CS_Portada.jpg",
-      "segundos": 3,
-      "transicion": "zoom"
-    },
-    {
-      "archivo": "imagenes/06-CS_1.jpg",
-      "segundos": 6,
-      "transicion": "persiana"
-    },
-    {
-      "archivo": "imagenes/07-CS_2.jpg",
-      "segundos": 6,
-      "transicion": "giro"
-    },
-    {
       "archivo": "imagenes/20260928-075428-1.jpg",
+      "segundos": 6,
+      "transicion": "giro"
+    },
+    {
+      "archivo": "imagenes/20260928-075822-1.jpg",
       "segundos": 6,
       "transicion": "giro"
     }
