@@ -37,6 +37,11 @@
       "archivo": "imagenes/07-CS_2.jpg",
       "segundos": 6,
       "transicion": "giro"
+    },
+    {
+      "archivo": "imagenes/20260928-075428-1.jpg",
+      "segundos": 6,
+      "transicion": "giro"
     }
   ]
 }
